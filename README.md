@@ -1,62 +1,96 @@
 # Streamlit Sensor Data Analysis and Chat App
 
-An interactive and intelligent web application built with Streamlit, designed to analyze and generate insights from real-time sensor data. This app combines advanced data retrieval, natural language processing, and data visualization to provide actionable insights and an intuitive chat-based querying system. By leveraging modern data tools, the app helps users track, query, and understand environmental sensor data in a conversational and visual format.
+An interactive application built with Streamlit to analyze and generate insights from real-time sensor data. This app leverages data retrieval, natural language processing, and data visualization to provide users with actionable insights through an intuitive, chat-based interface.
 
 ## Key Features
 
 ### 1. Insight Generation
-The **Insight Generation** feature enables users to visualize real-time and historical data from various environmental sensors (e.g., temperature, humidity, AQI, and CO2 levels). With interactive charts, users can:
-
-- Monitor environmental changes and identify trends or anomalies.
-- Gain quick insights into the state of each sensor and its recorded data.
-- Understand how various environmental factors correlate over time.
+The **Insight Generation** feature helps users visualize real-time and historical sensor data for various environmental factors, such as temperature, humidity, air quality, and CO2 levels. Interactive charts and insights allow users to:
+- Track environmental changes.
+- Detect patterns or anomalies in data.
+- Gain a better understanding of environmental conditions.
 
 ### 2. RAG (Retrieval-Augmented Generation) Chat
-The **RAG-based chat** feature combines data retrieval and language generation to answer user questions related to sensor data. This enables users to interact conversationally with the data, making it easy to access specific information without sifting through raw datasets. Users can ask questions like:
+With **Retrieval-Augmented Generation (RAG)**, users can interact with sensor data conversationally. This feature allows users to ask questions and receive meaningful, context-aware responses about sensor data. For example, users can query:
+- "What was the highest temperature recorded this week?"
+- "How has the air quality varied over the last month?"
 
-- "What was the highest temperature recorded last week?"
-- "How has the air quality varied over the past month?"
+The RAG-based chat leverages **LangChain** and **AWS Bedrock** for natural language processing, ensuring accurate and relevant answers based on sensor data.
 
-Using **LangChain**, the chat system efficiently retrieves relevant data and generates responses, helping users access insights quickly and naturally.
+## Importance of This App
 
-## Importance of the App
-
-With climate change and pollution on the rise, real-time monitoring of environmental data has become critical. This app empowers researchers, organizations, and individuals to:
-
-- **Track Air Quality**: Monitor pollutants like AQI and CO2 levels and understand their health impact.
-- **Promote Environmental Awareness**: The accessible data insights encourage proactive steps toward environmental improvement.
-- **Make Data-Driven Decisions**: Real-time and historical data help optimize environmental conditions, detect risks, and take informed action.
-- **Support Education and Research**: An invaluable tool for students, environmental scientists, and researchers who need real-world data.
+Real-time environmental data is crucial for monitoring and improving health, safety, and environmental conditions. This app:
+- **Supports Data-Driven Decisions**: Enables better decision-making based on real-time and historical data.
+- **Enhances Environmental Awareness**: Provides insights that encourage proactive environmental management.
+- **Supports Research and Education**: Ideal for students, researchers, and environmental scientists working with real-world data.
 
 ## Technologies and Tools Used
 
-This app integrates a variety of powerful tools for data storage, retrieval, analysis, and visualization:
+This app integrates the following tools and technologies:
 
 ### MongoDB Atlas
-MongoDB Atlas serves as the cloud-based NoSQL database for storing sensor data. MongoDB's flexible schema and powerful querying capabilities make it ideal for handling sensor data with diverse structures. **MongoDB Atlas** also provides cloud-native data services, making it easy to deploy, manage, and scale our database.
+**MongoDB Atlas** is used to store sensor data in the cloud. MongoDB's flexible schema allows for easy storage and retrieval of sensor data, while its cloud-native capabilities support scalability and management.
 
 ### MongoDB Vector
-The app leverages **MongoDB Vector** search capabilities to store vector embeddings for text and sensor data, enabling efficient similarity-based querying. This makes it possible to implement intelligent search functionality, helping the RAG system retrieve the most relevant data when responding to user questions.
+**MongoDB Vector Search** is used to store vector embeddings of text and sensor data, enabling efficient similarity-based queries. This allows the RAG system to retrieve the most relevant data when answering user questions.
 
 ### AWS Bedrock
-**Amazon Bedrock** is used as a foundation for generating language-based insights, powering the RAG model's response generation. By leveraging Bedrock's pre-trained foundation models, the app can understand and generate context-aware responses based on sensor data, ensuring accurate and natural answers to user queries.
+**AWS Bedrock** provides foundational language models for natural language generation, enabling the RAG model to create accurate and contextually relevant responses based on sensor data.
 
 ### LangChain
-**LangChain** is a framework that allows easy integration of large language models (LLMs) with custom data. In this app, LangChain supports the RAG-based chat system, enabling the integration of MongoDB data with AWS Bedrock to create a seamless question-answering system. LangChain simplifies retrieval and language generation, enhancing the system's ability to answer complex questions based on sensor data.
+**LangChain** is a framework for integrating large language models (LLMs) with external data. It supports the RAG chat system by managing the retrieval and language generation process, connecting MongoDB data with AWS Bedrock to answer user queries.
 
 ### Streamlit
-**Streamlit** is a Python-based framework used to create the app's user interface. Streamlit allows for quick and interactive development of data-driven applications, enabling users to visualize insights, interact with the RAG-based chat, and navigate the app intuitively.
+**Streamlit** is used for the app’s user interface, offering an easy-to-use, interactive experience. With Streamlit, users can visualize insights, interact with the RAG chat, and view real-time sensor data seamlessly.
+
+## Folder Structure
+
+The project is organized as follows:
+
+```plaintext
+.
+├── api                     # Backend API folder
+│   ├── routes              # API routes
+│   ├── services            # Services for data processing
+│   ├── config.py           # Configuration for the API
+│   ├── main.py             # Main API entry point
+│   └── sensor_data.txt     # Sample sensor data file
+├── components              # Streamlit component modules
+│   ├── insight_display.py  # Displays insights in the app
+│   ├── sensor_charts.py    # Visualizations for sensor data
+│   └── sensor_form.py      # Form to input sensor data
+├── .gitignore              # Files and directories to ignore in git
+├── README.md               # Project documentation
+├── app.py                  # Main Streamlit application file
+├── requirements.txt        # Project dependencies
+└── utils.py                # Utility functions for the app
+```
+
+### Folder Descriptions
+
+- **`/api`**: Contains backend API components for data processing, including routes, services, and configurations.
+  - **`routes`**: API endpoint definitions.
+  - **`services`**: Business logic and data processing services.
+  - **`config.py`**: Configuration for the API, including environment settings.
+  - **`main.py`**: Entry point for running the API.
+  - **`sensor_data.txt`**: Example sensor data for testing.
+- **`/components`**: Modules for different UI components in Streamlit.
+  - **`insight_display.py`**: Displays calculated insights based on sensor data.
+  - **`sensor_charts.py`**: Generates charts for data visualization.
+  - **`sensor_form.py`**: Handles user input for sensor data.
+- **`app.py`**: Main Streamlit app that integrates all components.
+- **`utils.py`**: Helper functions to support the app’s functionality.
 
 ## Getting Started
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.8 or above
 - MongoDB Atlas account
 - AWS account with Bedrock access
 
 ### Installation
 
-1. Clone this repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/streamlit_sensor_app.git
    ```
@@ -64,52 +98,50 @@ The app leverages **MongoDB Vector** search capabilities to store vector embeddi
    ```bash
    cd streamlit_sensor_app
    ```
-3. Install the required packages:
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
 ### Configuration
-1. **MongoDB Atlas Setup**: Ensure your MongoDB Atlas account is configured and you have access to the MongoDB Vector search capabilities.
-2. **AWS Bedrock Access**: Configure your AWS credentials for Bedrock integration. Set up your environment to connect with the Bedrock API.
-3. **Environment Variables**: Set up environment variables for MongoDB Atlas and AWS Bedrock in a `.env` file:
+
+1. **MongoDB Atlas**: Set up your MongoDB Atlas account and database.
+2. **AWS Bedrock**: Configure AWS credentials for Bedrock access. Ensure permissions are correctly set.
+3. **Environment Variables**: Add environment variables in a `.env` file:
    ```plaintext
    MONGODB_URI=<Your MongoDB Atlas URI>
    AWS_ACCESS_KEY_ID=<Your AWS Access Key ID>
    AWS_SECRET_ACCESS_KEY=<Your AWS Secret Access Key>
    ```
-4. **Run the App**:
-   ```bash
-   streamlit run app.py
-   ```
+
+### Running the App
+
+Start the Streamlit app locally:
+```bash
+streamlit run app.py
+```
+
+Access the app at `http://localhost:8501`.
 
 ## Usage
 
-1. **Access the app** at `http://localhost:8501`.
-2. **View insights** in real time through charts and tables under the Insight Generation section.
-3. **Ask questions** about the data using the RAG chat interface for a conversational experience.
-
-## File Structure
-
-- `app.py`: Main application file for Streamlit.
-- `requirements.txt`: List of required Python packages.
-- `.env`: Environment variables for MongoDB and AWS Bedrock.
-- `README.md`: Documentation for the app.
+1. **Insight Generation**: View real-time and historical data visualizations under the Insight section.
+2. **RAG Chat**: Use the chat interface to ask questions about the sensor data and get context-aware responses.
 
 ## Future Enhancements
 
-- **Expanded Sensor Data Types**: Integrate additional environmental sensors such as noise and light intensity.
-- **User-Customized Reports**: Allow users to export detailed reports based on their queries and insights.
-- **Advanced NLP for RAG Chat**: Enhance the RAG model to handle more complex, multi-step queries for in-depth analysis.
+- **Extended Data Types**: Add support for additional environmental sensors, such as light intensity and noise levels.
+- **Customizable Reports**: Enable users to export data insights as reports.
+- **Enhanced NLP**: Improve the RAG chat to handle more complex queries.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contributions
 
-Contributions are welcome! Submit a pull request or open an issue to discuss improvements and new features.
+Contributions are welcome! Feel free to submit pull requests or open issues for discussion.
 
 ## Acknowledgments
 
-This app relies on various open-source libraries and cloud services, including Streamlit, MongoDB Atlas, AWS Bedrock, and LangChain.
+This app is built with open-source technologies and cloud services, including MongoDB Atlas, AWS Bedrock, LangChain, and Streamlit.
