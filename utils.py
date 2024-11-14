@@ -2,7 +2,8 @@
 import requests
 import streamlit as st
 
-BASE_API_URL = "http://127.0.0.1:8000/api/v1"
+# BASE_API_URL = "http://127.0.0.1:8000/api/v1"
+BASE_API_URL = "https://insightpulse.onrender.com/api/v1"
 
 @st.cache_data
 def fetch_insights_from_api(sensor_id):
