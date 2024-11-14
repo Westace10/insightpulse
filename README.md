@@ -2,6 +2,26 @@
 
 An interactive application built with Streamlit to analyze and generate insights from real-time sensor data. This app leverages data retrieval, natural language processing, and data visualization to provide users with actionable insights through an intuitive, chat-based interface.
 
+---
+
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Importance of This App](#importance-of-this-app)
+- [Technologies and Tools Used](#technologies-and-tools-used)
+- [Folder Structure](#folder-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Running the App](#running-the-app)
+- [Usage](#usage)
+- [FAQ & Limitations](#faq--limitations)
+- [Future Enhancements](#future-enhancements)
+- [License](#license)
+- [Contributions](#contributions)
+- [Acknowledgments](#acknowledgments)
+
 ## Key Features
 
 ### 1. Insight Generation
@@ -96,7 +116,7 @@ The project is organized as follows:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd streamlit_sensor_app
+   cd insightpulse_app
    ```
 3. Install dependencies:
    ```bash
@@ -128,11 +148,30 @@ Access the app at `http://localhost:8501`.
 1. **Insight Generation**: View real-time and historical data visualizations under the Insight section.
 2. **RAG Chat**: Use the chat interface to ask questions about the sensor data and get context-aware responses.
 
+## FAQ & Limitations
+
+### Why is there occasional downtime?
+Since the app is hosted on Render's free tier, it may experience downtime after periods of inactivity. Free instances spin down to conserve resources and will restart when accessed again, resulting in brief delays.
+
+### Are there any limitations on the number of queries?
+On the free tier, the app may have limited resources, which can affect performance if multiple users access it simultaneously.
+
+### Can I connect my own sensor data?
+Currently, the app is set up to work with predefined sensor data in MongoDB Atlas. Future updates may include user-uploaded data integration.
+
 ## Future Enhancements
 
-- **Extended Data Types**: Add support for additional environmental sensors, such as light intensity and noise levels.
-- **Customizable Reports**: Enable users to export data insights as reports.
-- **Enhanced NLP**: Improve the RAG chat to handle more complex queries.
+1. **Frontend Development with ReactJS**: Redesign the frontend using **ReactJS** or **Flutter** to create a more dynamic, responsive, and user-friendly interface. This will allow for a smoother, more interactive user experience with improved performance and scalability.
+
+2. **Deployment on AWS Amplify**: Deploy the frontend on **AWS Amplify** for streamlined hosting, continuous integration, and fast delivery. AWS Amplify will provide automated deployment and scaling capabilities, reducing maintenance overhead and ensuring reliable access to the application.
+
+3. **Backend Migration to AWS Lambda and API Gateway**: Transition the backend to **AWS Lambda** for serverless compute resources and **API Gateway** for managing API endpoints. This migration will enhance scalability, reduce operational costs, and improve response times by leveraging AWS’s managed services.
+
+4. **Extended Sensor Data Types**: Add support for additional environmental sensors, such as light intensity and noise levels, to expand the application's data insights.
+
+5. **Customizable Report Generation**: Enable users to export data insights as downloadable reports, allowing for easy sharing, offline analysis, and record-keeping.
+
+6. **Enhanced NLP Capabilities**: Upgrade the RAG chat feature to handle more complex, multi-faceted queries, providing deeper insights and supporting more nuanced analysis of sensor data.
 
 ## License
 
