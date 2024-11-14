@@ -1,5 +1,5 @@
 # prompt_handler.py
-from api.config import MODEL_NAME, AWS_REGION, AWS_SECRET_KEY, AWS_ACCESS_KEY_ID
+from api.config import MODEL_NAME, AWS_REGION, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID
 
 from langchain_aws import ChatBedrock
 from langchain.prompts import PromptTemplate
@@ -34,7 +34,7 @@ def generate_insight(sensor_id=None):
         print(prompt)
 
         # Configure Amazon Bedrock LLM
-        llm = ChatBedrock(model=MODEL_NAME, region=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_KEY)
+        llm = ChatBedrock(model=MODEL_NAME, region=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
         print("Got here...")
         # Use the `|` operator to chain the formatted prompt to the llm
