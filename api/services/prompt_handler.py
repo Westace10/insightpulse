@@ -10,41 +10,50 @@ import os
 
 def generate_insight(sensor_id=None):
     """Generates insights using data retrieved from MongoDB and LangChain for analysis."""
-    # Retrieve sensor data
-    documents = get_sensor_data(sensor_id=sensor_id)
+    try:
+        # Retrieve sensor data
+        documents = get_sensor_data(sensor_id=sensor_id)
 
-    if not documents:
-        return "No data available for the specified sensor."
-    
-    # Construct the input prompt for LangChain
-    template = """
-    Given the following environmental data over the past week:
-    {data}
+        if not documents:
+            return "No data available for the specified sensor."
+        
+        # Construct the input prompt for LangChain
+        template = """
+        Given the following environmental data over the past week:
+        {data}
 
-    Please summarize the key trends and provide insights.
-    """
+        Please summarize the key trends and provide insights.
+        """
 
-    data_str = "\n".join([doc.page_content for doc in documents])
+        data_str = "\n".join([doc.page_content for doc in documents])
 
-    prompt_template = PromptTemplate(input_variables=["data"], template=template)
+        prompt_template = PromptTemplate(input_variables=["data"], template=template)
 
-    prompt = prompt_template.format(data=data_str)
+        prompt = prompt_template.format(data=data_str)
 
-    # Configure Amazon Bedrock LLM
-    llm = ChatBedrock(model=MODEL_NAME, region=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_KEY)
+        print(prompt)
 
-    # Use the `|` operator to chain the formatted prompt to the llm
-    response = (prompt_template | llm).invoke({"data": data_str})
-    print(response)
-    
-    return response
+        # Configure Amazon Bedrock LLM
+        llm = ChatBedrock(model=MODEL_NAME, region=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_KEY)
+
+        print("Got here...")
+        # Use the `|` operator to chain the formatted prompt to the llm
+        response = (prompt_template | llm).invoke({"data": data_str})
+        print(response)
+        
+        return response
+    except Exception as e:
+        return {str(e)}
 
 def generate_rag_query_insight(query=None):
     """Generates insights using data retrieved from MongoDB and LangChain for analysis."""
-    # Retrieve sensor data
-    rag_response = rag_query_pipeline(query_text=query)
+    try:
+        # Retrieve sensor data
+        rag_response = rag_query_pipeline(query_text=query)
 
-    if not rag_response:
-        return "Apologies, I don't have an answer to that!"
-    
-    return rag_response
+        if not rag_response:
+            return "Apologies, I don't have an answer to that!"
+        
+        return rag_response
+    except Exception as e:
+        return {str(e)}
