@@ -26,10 +26,6 @@ def display_sensor_insights(sensor_id: str) -> None:
             insights_data = fetch_insights_from_api(sensor_id)  
             # print(insights_data)
 
-            st.write("this is a simple message")
-            st.write(insights_data.get("insights"))
-            st.write(insights_data.get("sensor_data"))
-
             insights = insights_data.get("insights")
             plot_data = insights_data.get("sensor_data")
             
