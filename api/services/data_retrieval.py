@@ -3,9 +3,7 @@ import certifi
 from api.config import MONGO_URI, DB_NAME, COLLECTION_NAME, VECTOR_DB_NAME, VECTOR_COLLECTION_NAME
 
 from langchain.schema import Document
-from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pymongo import MongoClient, IndexModel, ASCENDING, TEXT
+from pymongo import MongoClient
 from datetime import datetime, timedelta, timezone
 from typing import List
 from api.services.load_rag_data import generate_embedding
@@ -51,6 +49,9 @@ class MongoDBRetriever:
                 "sensor_id": {"$gte": sensor_id}
             }
             results = self.collection.find(query)
+
+            if not results:
+                return f"No data found for sensor_id: {sensor_id}"
             
             # Format data for LangChain
             documents = [
