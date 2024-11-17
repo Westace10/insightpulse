@@ -36,6 +36,8 @@ def display_sensor_insights(sensor_id: str) -> None:
 
             # Plot sensor data and visualizations
             plot_sensor_data(plot_data, sensor_id)
+        except AttributeError as ae:
+            st.error(f"Sensor ID not found!")
         except Exception as e:
             st.error(f"An error occurred while fetching sensor insights: {str(e)}")
 
