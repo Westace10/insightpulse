@@ -13,8 +13,10 @@ def fetch_insights_from_api(sensor_id):
 
         # Check if the response is successful
         if response.status_code == 200:
+            
             data = response.json()
-            return data.get("insights", "No insights available.")
+            print(data)
+            return data.get("data", "No insights available.")
         # Handle specific error responses from the API
         elif response.status_code == 400:
             return "Bad request: Please check your input parameters."

@@ -5,7 +5,7 @@ from api.config import MONGO_URI, DB_NAME, COLLECTION_NAME, VECTOR_DB_NAME, VECT
 from langchain.schema import Document
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pymongo import MongoClient
+from pymongo import MongoClient, IndexModel, ASCENDING, TEXT
 from datetime import datetime, timedelta, timezone
 from typing import List
 from api.services.load_rag_data import generate_embedding
@@ -86,60 +86,7 @@ def get_sensor_data(sensor_id=None, for_rag=False):
     except Exception as e:
         return {str(e)}
 
-def update_knowledge_base():
-    try:
-        retriever = MongoDBRetriever(MONGO_URI, DB_NAME, COLLECTION_NAME)
-        yesterday = datetime.now() - timedelta(days=1)
-        yesterday_start = datetime(yesterday.year, yesterday.month, yesterday.day)  # Midnight at the start of yesterday
-        yesterday_end = yesterday_start + timedelta(days=1)  # Midnight at the start of today
-        data = retriever.retrieve_data_for_kb(start_date=yesterday_start, end_date=yesterday_end)
-
-        # Open a text file to write the data
-        with open("sensor_data.txt", "w") as file:
-            for record in data:
-                # Format the record to a readable format
-                record_str = (
-                    f"Sensor ID: {record['sensor_id']}\n"
-                    f"Timestamp: {record['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}\n"
-                    f"Temperature: {record['temperature']} °C\n"
-                    f"Humidity: {record['humidity']} %\n"
-                    f"AQI: {record['AQI']}\n"
-                    f"CO2 Level: {record['CO2_level']} ppm\n"
-                    f"ID: {record['id']}\n\n"
-                )
-                
-                # Write the formatted record to the text file
-                file.write(record_str)
-
-        print("Data written to sensor_data.txt")
-
-        # Load the TXT
-        loader = TextLoader("sensor_data.txt", encoding = 'UTF-8')
-        data = loader.load()
-
-        # Split the data into chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=20)
-        documents = text_splitter.split_documents(data)
-
-        # Prepare documents for insertion
-        docs_to_insert = [{
-            "text": doc.page_content,
-            "embedding": generate_embedding(doc.page_content)
-        } for doc in documents]
-
-        # Connect to your Atlas cluster
-        ca = certifi.where()
-        client = MongoClient(MONGO_URI, tlsCAFile=ca)
-        db = client[VECTOR_DB_NAME]
-        vector_collection = db[VECTOR_COLLECTION_NAME]
-
-        # Insert documents into the collection
-        result = vector_collection.insert_many(docs_to_insert)
-        
-        print(result)
-    except Exception as e:
-        return {str(e)}
-
 # update_knowledge_base()
+# get_sensor_data()
 
 

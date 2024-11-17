@@ -40,8 +40,9 @@ def generate_insight(sensor_id=None):
         # Use the `|` operator to chain the formatted prompt to the llm
         response = (prompt_template | llm).invoke({"data": data_str})
         print(response)
+        print(documents)
         
-        return response
+        return response, documents
     except Exception as e:
         return {str(e)}
 
@@ -57,3 +58,5 @@ def generate_rag_query_insight(query=None):
         return rag_response
     except Exception as e:
         return {str(e)}
+    
+# generate_insight("sensone")

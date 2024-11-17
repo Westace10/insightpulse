@@ -4,6 +4,8 @@ import os
 import certifi
 from pymongo.mongo_client import MongoClient
 from dotenv import load_dotenv
+import re
+from datetime import datetime
 
 # Initialize the Bedrock client (ensure your AWS credentials are properly set up)
 bedrock_client = boto3.client('bedrock-runtime', region_name='us-east-1')
@@ -76,74 +78,126 @@ def generate_answer_with_claude(prompt):
     except Exception as e:
         return {str(e)}
 
-# Define a function to run vector search queries
 def get_query_results(query):
-  """Gets results from a vector search query."""
-  try:
-    query_embedding = generate_embedding(query)
-    pipeline = [
-        {
-                "$vectorSearch": {
-                "index": "vector_index",
-                "queryVector": query_embedding,
-                "path": "embedding",
-                "exact": True,
-                "limit": 5
+    try:
+        print(f"Received query: {query}")
+        
+        query_embedding = generate_embedding(query)
+        print(f"Generated embedding for query")
+        
+        extracted_date = extract_date_from_query(query)
+        print(f"Extracted Date: {extracted_date}")
+        
+        pipeline = [
+            {
+                "$search": {
+                    "index": "vector_search_index",  # Use the name of the search index we created
+                    "knnBeta": {
+                        "vector": query_embedding,
+                        "path": "embedding",
+                        "k": 1000
+                    }
                 }
-        }, {
-                "$project": {
-                "_id": 0,
-                "text": 1
             }
-        }
+        ]
+        
+        if extracted_date:
+            pipeline.append({
+                "$match": {"timestamp": {"$gte": extracted_date}}
+            })
+        
+        pipeline.extend([
+            {"$sort": {"timestamp": -1}},
+            {"$limit": 100},
+            {
+                "$project": {
+                    "_id": 0,
+                    "sensor_id": 1,
+                    "timestamp": 1,
+                    "temperature": 1,
+                    "humidity": 1,
+                    "AQI": 1,
+                    "CO2_level": 1,
+                    "id": 1,
+                    "text": 1
+                }
+            }
+        ])
+        
+        results = collection.aggregate(pipeline)
+        
+        array_of_results = list(results)
+        
+        print(f"Total results retrieved: {len(array_of_results)}")
+        
+        if array_of_results:
+            print(f"Oldest result timestamp: {array_of_results[-1]['timestamp']}")
+            print(f"Newest result timestamp: {array_of_results[0]['timestamp']}")
+        else:
+            print("No results retrieved")
+        
+        return array_of_results
+    
+    except Exception as e:
+        print(f"Error in get_query_results: {str(e)}")
+        return {"error": str(e)}
+
+# Helper function to extract date/time or period from the query
+def extract_date_from_query(query):
+    """Extracts date from the user's query if any"""
+    # Regular expression patterns for matching dates and times in the query (basic examples)
+    date_patterns = [
+        r'\b(\d{4}-\d{2}-\d{2})\b',  # YYYY-MM-DD format
+        r'\b(\d{2}/\d{2}/\d{4})\b',  # MM/DD/YYYY format
+        r'\b(on\s+\d{4}-\d{2}-\d{2})\b',  # "on YYYY-MM-DD"
+        r'\b(at\s+\d{2}:\d{2}(:\d{2})?\s*(AM|PM)?)\b'  # Time format like 14:00 or 2:00 PM
     ]
-
-    results = collection.aggregate(pipeline)
-
-    array_of_results = []
-    for doc in results:
-        array_of_results.append(doc)
-    return array_of_results
-  except Exception as e:
-        return {str(e)}
+    
+    for pattern in date_patterns:
+        match = re.search(pattern, query)
+        if match:
+            return match.group(0)  # Return the matched date/time/period
+    
+    return None  # No date/time found
 
 def construct_prompt(user_query):
     """
     Constructs a prompt for Claude based on sensor data and user query.
     
     Args:
-        sensor_data (dict): Dictionary containing the sensor data and embedding vector.
         user_query (str): The user's question or query regarding the sensor data.
     
     Returns:
         str: The formatted prompt for Claude.
     """
     try:
+        # Extract the relevant date from the user query if any
+        extracted_date = extract_date_from_query(user_query)
+
+        # Get the context data using the user query
         context_docs = get_query_results(user_query)
         print(context_docs)
         context_string = " ".join([doc["text"] for doc in context_docs])
 
-        prompt = f"""Use the following pieces of context to answer the question at the end.
-            {context_string}
-            Question: {user_query}
-        """
-        # prompt = (
-        #     f"Sensor ID: {sensor_data['sensor_id']}\n"
-        #     f"Timestamp: {sensor_data['timestamp'].strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
-        #     f"Temperature: {sensor_data['temperature']}°C\n"
-        #     f"Humidity: {sensor_data['humidity']}%\n"
-        #     f"AQI: {sensor_data['AQI']}\n"
-        #     f"CO2 Level: {sensor_data['CO2_level']} ppm\n"
-        #     f"\nUser Query: {user_query}\n"
-        #     f"\nContext: Based on the provided sensor readings, answer the user's query. "
-        #     "Provide relevant insights or identify any abnormal readings. "
-        #     "Use the embedding for contextual similarity if responding to related queries.\n"
-        # )
+        # If a date is found, adjust the context accordingly
+        if extracted_date:
+            prompt = f"""Use the following pieces of context to answer the question at the end.
+                        The question specifies a date/time, so refer to the relevant context from {extracted_date}:
+                        {context_string}
+                        Question: {user_query}
+                    """
+        else:
+            # If no date is found, use the most recent context
+            prompt = f"""Use the following pieces of context to answer the question at the end.
+                        The question doesn't specify a date/time, so refer to the most recent context:
+                        {context_string}
+                        Question: {user_query}
+                    """
         
         return prompt
     
     except Exception as e:
-        return {str(e)}
+        return {"error": str(e)}
 
 
 def rag_query_pipeline(query_text):
@@ -157,3 +211,5 @@ def rag_query_pipeline(query_text):
         return answer
     except Exception as e:
         return {str(e)}
+    
+# get_query_results("how are the readings?")

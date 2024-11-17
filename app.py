@@ -23,15 +23,23 @@ def display_sensor_insights(sensor_id: str) -> None:
         try:
             # Use the cached version if you created a wrapper, otherwise use the original
             # insights = cached_fetch_insights_from_api(sensor_id) # If using the wrapper
-            insights = fetch_insights_from_api(sensor_id)  
+            insights_data = fetch_insights_from_api(sensor_id)  
+            # print(insights_data)
+
+            st.write("this is a simple message")
+            st.write(insights_data.get("insights"))
+            st.write(insights_data.get("sensor_data"))
+
+            insights = insights_data.get("insights")
+            plot_data = insights_data.get("sensor_data")
             
-            st.session_state.insights = insights  # Save insights in session
+            st.session_state.insights = insights_data.get("insights")  # Save insights in session
 
             # Display insights
             display_insights(insights)
 
             # Plot sensor data and visualizations
-            plot_sensor_data(sensor_id)
+            plot_sensor_data(plot_data, sensor_id)
         except Exception as e:
             st.error(f"An error occurred while fetching sensor insights: {str(e)}")
 

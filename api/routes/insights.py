@@ -9,8 +9,9 @@ async def get_insights(sensor_id: str = None):
     try:
         if not sensor_id:
             raise HTTPException(status_code=400, detail="Sensor ID is required.")
-        insights = generate_insight(sensor_id)
-        return {"insights": insights}
+        insights, sensor_data = generate_insight(sensor_id)
+        response = {"data": {"insights": insights, "sensor_data": sensor_data}}
+        return response
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=f"Invalid input: {ve}")
     except ConnectionError:
